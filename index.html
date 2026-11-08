@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plateline: translate handwritten menus from a photo</title>
+<meta name="description" content="Photograph a handwritten menu or stall board. Plateline explains each dish, its spice level, and vegetarian, vegan, and allergen info.">
+<meta name="robots" content="noindex">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Plateline: translate handwritten menus from a photo">
+<meta property="og:description" content="Know what you’re ordering, even when you can’t read the menu.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFF6DD;--s:#FFFFFF;--ink:#1B1A17;--mut:#5C564C;--line:#E6DCC0;--chili:#C73A16;--chili-h:#A82F10;--leaf:#2F7D4F;--tur:#F2B632;--bar:rgba(255,246,221,.72);--g1:#000000;--g2:#666666;--ph:#FBE7A8;--ease:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root{--bg:#131209;--s:#1F1F1F;--ink:#F5F1E8;--mut:#B5AE9F;--line:#313131;--leaf:#6CC795;--bar:rgba(19,18,9,.72);--g1:#FFFFFF;--g2:#9B9B9B;--ph:#313131}}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:calc(80px + env(safe-area-inset-top,0px))}
+body{font:400 16px/24px Poppins,system-ui,sans-serif;background:var(--bg);color:var(--ink);text-wrap:pretty}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+h1,h2,h3{text-wrap:balance;font-weight:600}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+.heading-1{font-size:60px;line-height:60px;font-weight:600}
+.heading-2{font-size:48px;line-height:48px;font-weight:600}
+.heading-3{font-size:36px;line-height:40px;font-weight:600}
+.heading-5{font-size:24px;line-height:32px;font-weight:600}
+.title-1{font-size:20px;line-height:28px;font-weight:500}
+.title-2{font-size:18px;line-height:28px;font-weight:500}
+.title-4{font-size:14px;line-height:20px;font-weight:500}
+.body-3{font-size:16px;line-height:24px;font-weight:400}
+.caption-2{font-size:14px;line-height:20px;font-weight:400}
+.caption-4{font-size:12px;line-height:16px;font-weight:500}
+.button-md{font-size:16px;line-height:24px;font-weight:600}
+.mut{color:var(--mut)}
+@media(max-width:767px){.heading-1{font-size:36px;line-height:40px}.heading-2,.heading-3{font-size:30px;line-height:36px}}
+.skip{position:absolute;left:16px;top:-80px;background:var(--ink);color:var(--bg);padding:8px 12px;border-radius:8px;z-index:30}
+.skip:focus{top:calc(8px + env(safe-area-inset-top,0px))}
+header{position:fixed;top:0;left:0;right:0;display:flex;justify-content:center;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 0;z-index:20;pointer-events:none}
+.bar{pointer-events:auto;display:flex;align-items:center;gap:16px;padding:8px 8px 8px 16px;border-radius:9999px;border:1px solid var(--line);background:var(--bar);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.bar .links{display:none;gap:16px}
+@media(min-width:640px){.bar .links{display:flex}}
+.bar a.l{text-decoration:none;padding:4px 8px;border-radius:9999px}
+.bar a.l:hover{background:var(--line)}
+.logo{font-weight:600;font-size:18px;line-height:28px;text-decoration:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:8px 12px;min-height:40px;border:0;border-radius:9999px;background:var(--chili);color:#fff;text-decoration:none;cursor:pointer;font-family:inherit;transition:background-color .3s var(--ease),transform .5s var(--ease)}
+.btn:hover{background:var(--chili-h);transform:translateY(-1px)}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{opacity:.6;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.hero{padding:80px 0 64px;display:grid;gap:48px;align-items:center}
+@media(min-width:900px){.hero{grid-template-columns:1fr 320px;padding:96px 0 80px}}
+.hero .copy{max-width:680px}
+.hero h1{background:linear-gradient(90deg,var(--g1),var(--g2));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.hero h1 br{display:none}
+@media(min-width:768px){.hero h1 br{display:inline}}
+.hero p.sub{margin-top:24px;max-width:680px;font-size:18px;line-height:28px;color:var(--mut)}
+.hero .go{margin-top:32px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px}
+.phone{justify-self:center;width:280px;border-radius:24px;background:var(--ink);padding:8px}
+.screen{border-radius:16px;background:var(--bg);overflow:hidden;padding:8px;display:grid;gap:8px}
+.shot{border-radius:8px;background:#272727;color:#F5F1E8;padding:16px;display:grid;gap:8px}
+.dish{border-radius:8px;background:var(--s);border:1px solid var(--line);padding:8px 12px}
+.dish .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.dots{display:inline-flex;gap:2px}.dots i{width:8px;height:8px;border-radius:9999px;background:var(--line)}.dots i.on{background:var(--chili)}
+.tag{display:inline-block;margin-top:4px;padding:2px 8px;border-radius:9999px;border:1px solid var(--leaf);color:var(--leaf)}
+.tag.al{border-color:var(--chili);color:var(--chili)}
+.stats{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.stats>div{background:var(--s);padding:24px}
+@media(min-width:768px){.stats{grid-template-columns:repeat(3,1fr)}}
+section{padding:80px 0}
+.two{display:grid;gap:24px}
+@media(min-width:768px){.two{grid-template-columns:1fr 1.3fr;gap:48px}}
+.tag-line{padding:96px 0}
+.tag-line p{max-width:980px}
+.w{display:inline}
+.js .w{opacity:.3;transition:opacity .5s var(--ease)}
+.js .w.on{opacity:1}
+.rows{list-style:none;padding:0;margin-top:48px}
+.rows li{display:grid;gap:8px;padding:24px 0;border-top:1px solid var(--line)}
+@media(min-width:768px){.rows li{grid-template-columns:1fr 1.4fr;gap:48px}}
+.steps{margin-top:48px;display:grid;gap:32px;list-style:none;padding:0}
+@media(min-width:768px){.steps{grid-template-columns:repeat(3,1fr)}}
+.steps .n{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:9999px;background:var(--tur);color:#1B1A17;font-weight:600;margin-bottom:12px}
+details{border:1px solid var(--line);border-radius:16px;background:var(--s);margin-top:8px}
+summary{list-style:none;cursor:pointer;padding:16px 24px;display:flex;justify-content:space-between;gap:16px;border-radius:16px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-weight:500}
+details[open] summary::after{content:"\2212"}
+details p{padding:0 24px 16px;color:var(--mut)}
+.ph{background:var(--ph);border:1px dashed var(--mut);border-radius:4px;padding:0 4px}
+.final{border:1px solid var(--line);background:var(--s);border-radius:24px;padding:48px 24px}
+@media(min-width:768px){.final{padding:64px 48px}}
+form{margin-top:32px;max-width:480px}
+label{display:block;margin-bottom:8px}
+.field{display:flex;flex-wrap:wrap;gap:8px}
+input{flex:1 1 200px;min-height:40px;padding:8px 12px;border:1px solid var(--mut);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+input[aria-invalid=true]{border-color:var(--chili)}
+.err{margin-top:8px;color:var(--chili);min-height:20px}
+footer{padding:48px 0 64px;border-top:1px solid var(--line)}
+footer .in{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px}
+footer nav{display:flex;flex-wrap:wrap;gap:16px}
+.view{padding:128px 0 80px;max-width:680px}
+.view p{margin-top:16px}
+.js .rv{opacity:0;transform:translateY(32px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.js .rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.js .rv{transform:none;transition:opacity .3s linear}.js .w{opacity:1;transition:none}.btn{transition:none}.btn:hover{transform:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header><div class="bar"><a class="logo" href="#top" id="home-link">Plateline</a><nav class="links title-4" aria-label="Main"><a class="l" href="#how">How it works</a><a class="l" href="#faq">FAQ</a></nav><a class="btn button-md" href="#join">Join waitlist</a></div></header>
+
+<main id="main">
+<div id="home">
+<div class="wrap" id="top">
+<div class="hero">
+<div class="copy">
+<h1 class="heading-1">Know what you’re ordering,<br> even when you can’t<br> read the menu.</h1>
+<p class="sub">Snap a photo of a handwritten menu or stall board. Plateline tells you what each dish is, how spicy it is, and whether it’s vegetarian, vegan, or has common allergens.</p>
+<div class="go"><a class="btn button-md" href="#join">Join the Plateline waitlist</a><span class="caption-2 mut">Free to join. Just your email.</span></div>
+<p class="caption-2 mut" style="margin-top:16px">Works from one photo of a handwritten menu or stall board.</p>
+</div>
+<div>
+<div class="phone" role="img" aria-label="Example Plateline screen: three dishes from a handwritten menu, each with a short description, a spice level, and diet or allergen tags.">
+<div class="screen" aria-hidden="true">
+<div class="shot title-4"><span>Appam</span><span>Fish curry</span><span>Parotta</span></div>
+<div class="dish"><div class="row title-4"><span>Appam</span><span class="dots" title="Spice: none"><i></i><i></i><i></i></span></div><p class="caption-4 mut">Lacy rice pancake with a soft centre, often eaten with curry.</p><span class="tag caption-4">Vegan</span></div>
+<div class="dish"><div class="row title-4"><span>Fish curry</span><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i></span></div><p class="caption-4 mut">Fish simmered in a tangy, spiced coconut gravy.</p><span class="tag al caption-4">Contains fish</span></div>
+<div class="dish"><div class="row title-4"><span>Parotta</span><span class="dots"><i></i><i></i><i></i></span></div><p class="caption-4 mut">Layered flatbread, flaky and soft.</p><span class="tag al caption-4">Contains gluten</span></div>
+</div></div>
+<p class="caption-2 mut" style="text-align:center;margin-top:8px">Example screen with example dishes</p>
+</div>
+</div>
+<div class="stats rv">
+<div><p class="heading-5">1 photo</p><p class="caption-2 mut">is all it takes to start</p></div>
+<div><p class="heading-5">3 answers per dish</p><p class="caption-2 mut">What it is, how spicy, and what’s in it</p></div>
+<div><p class="heading-5">Handwritten</p><p class="caption-2 mut">menus and stall boards, not just printed ones</p></div>
+</div>
+</div>
+
+<section id="why"><div class="wrap two rv"><h2 class="heading-3">Words are only half the answer.</h2><p class="title-2 mut" style="font-weight:400">A literal translation gives you the words on the board. It doesn’t tell you whether a dish is fiery, meat free, or made with an ingredient you avoid. Plateline answers those questions for every dish before you order.</p></div></section>
+
+<section class="tag-line"><div class="wrap"><p class="heading-2" id="tagline">You came for the food, not the guesswork. Know what each dish is, how spicy it is, and what’s in it before you order.</p></div></section>
+
+<section id="benefits"><div class="wrap rv"><h2 class="heading-3">What you get with every photo</h2>
+<ul class="rows">
+<li><h3 class="title-1">Order with confidence</h3><p class="mut">Every dish gets a plain explanation of what it is, not just a literal translation.</p></li>
+<li><h3 class="title-1">Know the heat first</h3><p class="mut">Each dish shows a spice level, so mild eaters and chili fans both choose well.</p></li>
+<li><h3 class="title-1">Eat by your rules</h3><p class="mut">Dishes are flagged vegetarian or vegan where they are.</p></li>
+<li><h3 class="title-1">Spot common allergens</h3><p class="mut">See which dishes contain them, so you know what to ask the vendor about.</p></li>
+<li><h3 class="title-1">Skip the typing</h3><p class="mut">One photo of the board is all it takes to start.</p></li>
+</ul></div></section>
+
+<section id="how"><div class="wrap rv"><h2 class="heading-3">How it works</h2>
+<ol class="steps">
+<li><span class="n">1</span><h3 class="title-1">Snap the menu</h3><p class="mut">Point your camera at a handwritten menu or stall board and take a photo.</p></li>
+<li><span class="n">2</span><h3 class="title-1">Plateline reads every dish</h3><p class="mut">Each line is translated and explained in plain language.</p></li>
+<li><span class="n">3</span><h3 class="title-1">Check, then order</h3><p class="mut">See spice level, vegetarian and vegan flags, and allergens for each dish.</p></li>
+</ol></div></section>
+
+<section id="faq"><div class="wrap rv" style="max-width:800px"><h2 class="heading-3" style="margin-bottom:24px">Questions, answered</h2>
+<details><summary class="title-2">What is Plateline?</summary><p>A mobile app that translates handwritten menus and stall boards from a camera photo.</p></details>
+<details><summary class="title-2">What does it show for each dish?</summary><p>What the dish is, its spice level, and whether it’s vegetarian, vegan, or contains common allergens.</p></details>
+<details><summary class="title-2">Who is it for?</summary><p>International tourists and food travellers, and anyone new to a city who can’t read the local language or script, including migrants, students, and expats.</p></details>
+<details><summary class="title-2">Can it read messy handwriting?</summary><p>Handwritten menus and stall boards are what Plateline is built for. <span class="ph">{{accuracy wording}}</span></p></details>
+<details><summary class="title-2">Can I rely on the allergen info?</summary><p>Plateline shows whether a dish contains common allergens as a guide, not a guarantee. If you have a serious allergy, always confirm with the vendor.</p></details>
+<details><summary class="title-2">Which languages and scripts work?</summary><p><span class="ph">{{languages}}</span></p></details>
+<details><summary class="title-2">Which phones will it run on, and when does it launch?</summary><p><span class="ph">{{platforms}}</span> <span class="ph">{{launch timing}}</span></p></details>
+<details><summary class="title-2">What will it cost?</summary><p><span class="ph">{{pricing}}</span></p></details>
+<details><summary class="title-2">What happens after I join the waitlist?</summary><p>You’re added to the waitlist with the email you enter. <span class="ph">{{what we send and when}}</span></p></details>
+</div></section>
+
+<section id="join"><div class="wrap"><div class="final rv">
+<h2 class="heading-3" style="max-width:680px">Get on the Plateline waitlist.</h2>
+<p class="title-2 mut" style="font-weight:400;margin-top:16px;max-width:680px">Point, snap, and know what’s on your plate.</p>
+<form id="f" novalidate><label class="title-4" for="em">Email address</label>
+<div class="field"><input id="em" type="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" aria-describedby="er"><button class="btn button-md" id="sb" type="submit">Join the Plateline waitlist</button></div>
+<p class="err caption-2" id="er" role="alert"></p></form>
+<p class="title-1" id="ok" role="status" hidden></p>
+</div></div></section>
+</div>
+
+<div class="wrap view" id="v-privacy" hidden><h1 class="heading-3">Privacy</h1><p class="mut">Plateline collects the email address you enter to manage the waitlist. <span class="ph">{{full privacy policy}}</span></p><p><a href="#top">Back to home</a></p></div>
+<div class="wrap view" id="v-terms" hidden><h1 class="heading-3">Terms</h1><p class="mut"><span class="ph">{{terms of use}}</span></p><p><a href="#top">Back to home</a></p></div>
+<div class="wrap view" id="v-nf" hidden><h1 class="heading-3">This page isn’t on the menu.</h1><p class="mut">The link you followed doesn’t lead anywhere. Head back to the start.</p><p><a class="btn button-md" href="#top">Back to home</a></p></div>
+</main>
+
+<footer><div class="wrap in"><span class="logo">Plateline</span><nav aria-label="Footer" class="caption-2"><a href="#privacy">Privacy</a><a href="#terms">Terms</a><a href="#top">Back to top</a><span class="mut"><span class="ph">{{contact email}}</span></span></nav></div></footer>
+
+<script>
+document.documentElement.classList.add('js');
+var ids={privacy:'v-privacy',terms:'v-terms'},anchors=['','top','main','why','benefits','how','faq','join'];
+function route(){var h=location.hash.slice(1),home=document.getElementById('home'),on=anchors.indexOf(h)>-1,key=ids[h]||(on?null:'v-nf');
+home.hidden=!!key;['v-privacy','v-terms','v-nf'].forEach(function(i){document.getElementById(i).hidden=i!==key});
+var l=document.getElementById('home-link');if(key)l.removeAttribute('aria-current');else l.setAttribute('aria-current','page');
+if(key)window.scrollTo(0,0)}
+addEventListener('hashchange',route);route();
+try{var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.1});
+document.querySelectorAll('.rv').forEach(function(n){io.observe(n)});
+var t=document.getElementById('tagline'),words=t.textContent.trim().split(/\s+/);t.setAttribute('aria-label',t.textContent.trim());t.innerHTML='';
+words.forEach(function(w,i){var s=document.createElement('span');s.className='w';s.setAttribute('aria-hidden','true');s.textContent=w+(i<words.length-1?' ':'');s.style.transitionDelay=Math.min((i%10)*40,400)+'ms';t.appendChild(s)});
+var wo=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');wo.unobserve(e.target)}})},{rootMargin:'0px 0px -35% 0px'});
+t.querySelectorAll('.w').forEach(function(n){wo.observe(n)})}catch(x){document.querySelectorAll('.rv').forEach(function(n){n.classList.add('in')})}
+var f=document.getElementById('f'),em=document.getElementById('em'),er=document.getElementById('er'),sb=document.getElementById('sb'),ok=document.getElementById('ok'),lab=sb.textContent;
+f.addEventListener('submit',async function(e){e.preventDefault();var v=em.value.trim().toLowerCase();er.textContent='';em.removeAttribute('aria-invalid');
+if(!v){er.textContent='Enter your email address.';em.setAttribute('aria-invalid','true');em.focus();return}
+if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){er.textContent='That email doesn’t look right. Check it and try again.';em.setAttribute('aria-invalid','true');em.focus();return}
+sb.disabled=true;sb.textContent='Saving your spot';
+try{var db=window.claude&&await window.claude.use('db'),us=window.claude&&await window.claude.use('user');if(!db||!us)throw new Error('no db');await db.doc('waitlist/'+await us.id()).set({email:v,at:Date.now()});f.hidden=true;ok.hidden=false;ok.textContent='You’re on the waitlist as '+v+'.'}
+catch(x){er.textContent='We couldn’t save your email from this page. Please try again later.';sb.disabled=false;sb.textContent=lab}});
+</script>
+</body>
+</html>
